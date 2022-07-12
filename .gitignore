@@ -5,3 +5,5 @@ node_modules/
 .DS_Store
 Thumbs.db
 Desktop.ini
+client/package-lock.json
+server/package-lock.json
