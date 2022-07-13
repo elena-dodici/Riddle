@@ -26,7 +26,7 @@ exports.getUserById = async function (req, res) {
       "name",
       "points",
     ]);
-    console.log(result);
+
     return res.status(200).json(result);
   } catch (err) {
     console.log(err);

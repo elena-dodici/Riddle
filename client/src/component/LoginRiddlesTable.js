@@ -15,15 +15,6 @@ const LoginRiddlesTable = (props) => {
   const [openRiddles, setOpenRiddles] = useState([]);
   const [update, setUpdate] = useState(true);
 
-  // const closeRiddle = (rd) => {
-  //   let newOpen = openRiddles.filter((r) => {
-  //     return r.rid == rd.rid;
-  //   });
-  //   setOpenRiddles(newOpen);
-  //   // rd.state = "close";
-  //   setClosedRiddles([...closedRiddles, rd]);
-  // };
-
   const clickHandleClosed = async () => {
     setShowCloseRiddle((r) => !r);
   };
@@ -36,7 +27,7 @@ const LoginRiddlesTable = (props) => {
     for (let r of openResult) {
       await r.getHistory();
     }
-    console.log(openResult);
+
     setOpenRiddles(openResult);
   };
 
@@ -65,13 +56,13 @@ const LoginRiddlesTable = (props) => {
             <Form.Check
               onChange={clickHandleClosed}
               type="switch"
-              id="custom-switch"
+              id="switch1"
               label="Show All Closed riddles"
             />
             <Form.Check
               onChange={clickHandleOpen}
               type="switch"
-              id="custom-switch"
+              id="cswitch2"
               defaultChecked={true}
               label="Show All Open riddles"
             />
@@ -88,7 +79,15 @@ const LoginRiddlesTable = (props) => {
           </Button>
         </Col>
       </Row>
-      <Row>{showForm && <RiddleForm setShowForm={setShowForm} />}</Row>
+      <Row>
+        {showForm && (
+          <RiddleForm
+            setShowForm={setShowForm}
+            setMyOpenRiddles={setOpenRiddles}
+            setUpdate={setUpdate}
+          />
+        )}
+      </Row>
 
       <Row>
         {showOpenRiddle && (

@@ -63,13 +63,13 @@ const MyRiddlesTable = (props) => {
             <Form.Check
               onChange={clickHandleClosed}
               type="switch"
-              id="custom-switch"
+              id="switch1"
               label="Show My Closed riddles"
             />
             <Form.Check
               onChange={clickHandleOpen}
               type="switch"
-              id="custom-switch"
+              id="switch2"
               defaultChecked={true}
               label="Show  My Open riddles"
             />
@@ -86,7 +86,15 @@ const MyRiddlesTable = (props) => {
           </Button>
         </Col>
       </Row>
-      <Row>{showForm && <RiddleForm setShowForm={setShowForm} />}</Row>
+      <Row>
+        {showForm && (
+          <RiddleForm
+            setShowForm={setShowForm}
+            setUpdate={setUpdate}
+            setMyOpenRiddles={setMyOpenRiddles}
+          />
+        )}
+      </Row>
       <Row>
         {showCloseRiddle && (
           <ClosedRiddlesTable closedRiddles={MyclosedRiddles} />

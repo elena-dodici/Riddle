@@ -2,8 +2,10 @@ import { Table, Accordion } from "react-bootstrap";
 import dayjs from "dayjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
+import API from "../API";
 
 const MyOpenRiddlesTable = (props) => {
+  console.log(props.myOpenRiddles);
   return (
     <>
       <h2>My published Open Riddles</h2>
@@ -39,8 +41,11 @@ const OpenRRow = (props) => {
       let now = dayjs();
       let exp = dayjs(props.riddle.expiration);
       let rem = Math.floor(exp.diff(now) / 1000);
-      rem = rem < 0 ? 0 : rem;
-      setRemTime(rem);
+      if (rem < 0) {
+        API.UpdateStateByRid(props.riddle.rid, "expire");
+        setRemTime(0);
+        props.setUpdate(true);
+      } else setRemTime(rem);
     } else {
       setRemTime(0);
     }
@@ -113,7 +118,7 @@ const HistoryRow = (props) => {
   return (
     <>
       <td>{props.info.answerTime}</td>
-      <td>{props.info.answer}</td>{" "}
+      <td>{props.info.answer}</td>
     </>
   );
 };

@@ -56,6 +56,7 @@ const AddRiddle = async (riddle) => {
       riddle: riddle,
     }),
   });
+
   if (!response.ok) {
     const errMsg = await response.json();
     throw errMsg;

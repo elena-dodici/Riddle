@@ -27,7 +27,7 @@ const dayjs = require("dayjs");
 //   },
 // };
 
-// exports.putPlanByIdSchema = {
+// exports.postRiddleSchema = {
 //   id: {
 //     notEmpty: true,
 //     isNumeric: true,
@@ -40,8 +40,7 @@ const dayjs = require("dayjs");
 async function postRiddle(req, res) {
   try {
     let riddle = req.body.riddle;
-
-    riddle["rid"] = null;
+    delete riddle["history"];
     await RDao.store("Riddle", riddle);
     res.status(200).json();
   } catch (err) {

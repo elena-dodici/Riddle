@@ -61,6 +61,7 @@ const CloseRRow = (props) => {
 };
 
 const CloseRData = (props) => {
+  console.log(props.riddle.history);
   return (
     <>
       <td>{props.riddle.content}</td>

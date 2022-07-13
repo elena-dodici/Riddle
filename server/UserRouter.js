@@ -7,19 +7,18 @@ function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  return res.status(401).json({ error: "Not authorized" });
+  return res.status(401).json({ error: "Loggin Required" });
 }
 
 router.post("/sessions", passport.authenticate("local"), (req, res) => {
   res.status(201).json(req.user);
 });
 
-router.get("/session/current", isLoggedIn, (req, res) => {
+router.get("/session/current", (req, res) => {
   //check is still valid
-  console.log(req.user);
   if (req.isAuthenticated()) {
     res.status(200).json(req.user);
-  } else res.status(401).json({ error: "Not authenticated" });
+  } else res.status(403).json({ error: "Forbidden" });
 });
 
 router.delete("/session/current", isLoggedIn, (req, res) => {

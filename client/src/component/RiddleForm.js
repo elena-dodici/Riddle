@@ -6,8 +6,9 @@ import {
   FloatingLabel,
   Container,
 } from "react-bootstrap";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import dayjs from "dayjs";
+import Riddle from "./Riddle";
 
 import AuthContext from "./AuthProvider";
 import API from "../API";
@@ -30,7 +31,31 @@ function RiddleForm(props) {
     riddle["createTime"] = dayjs().format("YYYY/MM/DD HH:mm:ss");
     riddle["closeTime"] = null;
     riddle["authorId"] = auth.id;
+    riddle["history"] = [];
+
+    props.setShowForm((r) => !r);
+    props.setMyOpenRiddles((r) => [
+      ...r,
+      new Riddle(
+        null,
+        riddle.content,
+        riddle.difficulty,
+        riddle.hint1,
+        riddle.hint2,
+        riddle.duration,
+        "open",
+        riddle.answer,
+        dayjs().format("YYYY/MM/DD HH:mm:ss"),
+        null,
+        null,
+        auth.id
+      ),
+    ]);
+
+    props.setUpdate(true);
     await API.AddRiddle(riddle);
+
+    alert("submit successfully");
   };
 
   const handleChange = (e) => {
@@ -123,7 +148,9 @@ function RiddleForm(props) {
               <Form.Group className="mb-3">
                 <FloatingLabel label="duration">
                   <Form.Control
-                    type="text"
+                    type="number"
+                    min="30"
+                    max="600"
                     required={true}
                     value={riddle.duration}
                     placeholder="Riddle duration"
