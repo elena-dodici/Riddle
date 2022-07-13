@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import API from "./API";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Container } from "react-bootstrap";
+
 import {
   LoginRoute,
   HomePage,
@@ -23,18 +23,20 @@ function App() {
   //check authentication once fresh page
   useEffect(() => {
     const checkAuth = async () => {
-      let user = await API.GetUserInfo();
-      setloggedIn(true);
+      try {
+        let user = await API.GetUserInfo();
 
-      setAuth({
-        id: user.id,
-        email: user.username,
-        name: user.name,
-        surname: user.surname,
-      });
+        setloggedIn(true);
+
+        setAuth({
+          id: user.id,
+          email: user.username,
+          name: user.name,
+          surname: user.surname,
+        });
+        checkAuth();
+      } catch (err) {}
     };
-
-    checkAuth();
   }, []);
 
   //checklogin

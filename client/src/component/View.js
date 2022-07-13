@@ -1,13 +1,11 @@
 import { LogInForm } from "./Authentication";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { UserNavBar, VisitNavBar } from "./NavBar";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import API from "../API";
-import AuthContext from "./AuthProvider";
 import { LoginRiddlesTable } from "./LoginRiddlesTable";
 import RiddlesTable from "./RiddlesTable";
 import { RiddleForm } from "./RiddleForm";
-import { Link } from "react-router-dom";
 import { MyRiddlesTable } from "./MyRiddlesTable";
 import { Ranking } from "./Ranking";
 
@@ -35,7 +33,6 @@ const RiddleFormRoute = (props) => {
 const HomePage = (props) => {
   const [Riddles, setRiddles] = useState([]);
   const [usersOrderList, setUsersOrderList] = useState([]);
-  const { auth } = useContext(AuthContext);
 
   const getAllRiddles = async () => {
     const Riddles = await API.getAllRiddles();

@@ -91,32 +91,58 @@ exports.loadAllRowsByOneAttribute = async function loadAllRowsByOneAttribute(
   });
 };
 
-//SELECT name FROM User WHERE id =1;
-exports.loadOneByOneAttribute = async function loadOneRowByOneAttribute(
+//SELECT name,points FROM User WHERE id =1;
+exports.loadOneByAttributeSelected = async function loadOneByAttributeSelected(
   tableName,
-  seleceName,
-  attrName,
-  val
+  parameter_name,
+  value,
+  selectedNames
 ) {
   return new Promise((resolve, reject) => {
+    const selectedAttributes = selectedNames.join(",");
     const sql =
       "SELECT " +
-      seleceName +
+      selectedAttributes +
       " FROM " +
       tableName +
       " WHERE " +
-      attrName +
+      parameter_name +
       "= ?";
-    db.get("PRAGMA foreign_keys =ON");
-    db.get(sql, [val], (err, rows) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      resolve(rows);
+
+    db.get("PRAGMA foreign_keys = ON");
+    db.get(sql, value, (err, row) => {
+      if (err) reject(err);
+      resolve(row);
     });
   });
 };
+
+//SELECT name FROM User WHERE id =1;
+// exports.loadOneByOneAttribute = async function loadOneRowByOneAttribute(
+//   tableName,
+//   seleceName,
+//   attrName,
+//   val
+// ) {
+//   return new Promise((resolve, reject) => {
+//     const sql =
+//       "SELECT " +
+//       seleceName +
+//       " FROM " +
+//       tableName +
+//       " WHERE " +
+//       attrName +
+//       "= ?";
+//     db.get("PRAGMA foreign_keys =ON");
+//     db.get(sql, [val], (err, rows) => {
+//       if (err) {
+//         reject(err);
+//         return;
+//       }
+//       resolve(rows);
+//     });
+//   });
+// };
 
 //post history or riddle
 //INSERT INTO history ("id","rid","repid","answerTime","answer","result")VALUES ("1","TEST1",...)

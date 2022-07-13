@@ -1,4 +1,5 @@
 const RDao = require("./PersistantManager");
+const dayjs = require("dayjs");
 // exports.getRiddleByState = {
 //   state: {
 //     isInt: {
@@ -109,4 +110,44 @@ exports.putCloseTimeByRId = async function (req, res) {
     console.log(err);
     res.status(500).json(err);
   }
+};
+
+exports.putStateByRId = async function (req, res) {
+  let rid = req.params.rid;
+  let newState = req.body;
+
+  const updateState = async (newState) => {
+    try {
+      updateresult = await RDao.update("Riddle", newState, "rid", rid);
+      res.status(200).json();
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  };
+
+  if (newState.state)
+    switch (newState.state) {
+      case "open":
+        break;
+      case "close":
+        break;
+      case "expire":
+        let rows = await RDao.loadAllRowsByOneAttribute("Riddle", "rid", rid);
+        let row = rows[0];
+        if (row.state === "close") {
+          return res.status(200).json("already closed");
+        } else if (row.expiration) {
+          //1st reply
+          let rem = Math.floor(dayjs().diff(dayjs(row.expiration)) / 1000);
+          if (rem >= 0) {
+            updateState({ state: "close", closeTime: dayjs() });
+            return res.status(200).json("Closed");
+          } else {
+            return res.status(500).json("generic error");
+          }
+        }
+        break;
+    }
+  res.status(500).json("generic error");
 };

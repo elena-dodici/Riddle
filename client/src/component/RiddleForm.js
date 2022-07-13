@@ -8,7 +8,6 @@ import {
 } from "react-bootstrap";
 import { useState, useContext } from "react";
 import dayjs from "dayjs";
-import { useLocation, useNavigate } from "react-router-dom";
 
 import AuthContext from "./AuthProvider";
 import API from "../API";
@@ -40,8 +39,6 @@ function RiddleForm(props) {
       difficulty: e.target.value,
     });
   };
-  // const [show, setShow] = useState(false);
-  // const handleClose = () => setShow(false);
 
   return (
     <>

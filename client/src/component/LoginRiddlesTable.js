@@ -1,17 +1,7 @@
-import {
-  Table,
-  Row,
-  Col,
-  Button,
-  Link,
-  Accordion,
-  OverlayTrigger,
-  Form,
-  Container,
-} from "react-bootstrap";
+import { Row, Col, Button, Form, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useState, useEffect } from "react";
-import AuthContext from "./AuthProvider";
+import { useState, useEffect } from "react";
+
 import API from "../API";
 import { RiddleForm } from "./RiddleForm";
 import { ClosedRiddlesTable } from "./ClosedRiddlesTable";
@@ -19,48 +9,44 @@ import { OpenRiddlesTable } from "./OpenRiddlesTable";
 
 const LoginRiddlesTable = (props) => {
   const [showCloseRiddle, setShowCloseRiddle] = useState(false);
-  const [showOpenRiddle, setShowOpenRiddle] = useState(false);
+  const [showOpenRiddle, setShowOpenRiddle] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [closedRiddles, setClosedRiddles] = useState([]);
   const [openRiddles, setOpenRiddles] = useState([]);
-  const [history, setHistory] = useState();
-  const [update, setUpdate] = useState(false);
-  let closedRiddlesHistory = [];
-  let openRiddlesHistory = [];
+  const [update, setUpdate] = useState(true);
+
+  // const closeRiddle = (rd) => {
+  //   let newOpen = openRiddles.filter((r) => {
+  //     return r.rid == rd.rid;
+  //   });
+  //   setOpenRiddles(newOpen);
+  //   // rd.state = "close";
+  //   setClosedRiddles([...closedRiddles, rd]);
+  // };
 
   const clickHandleClosed = async () => {
     setShowCloseRiddle((r) => !r);
-    let closedResult = await API.getRiddleByState("close");
-    for (let r of closedResult) {
-      let result = await API.GetHistoryByRid(r.rid);
-      closedRiddlesHistory = closedRiddlesHistory.concat(result);
-    }
-
-    setClosedRiddles(closedResult);
-    setHistory(closedRiddlesHistory);
   };
+  const clickHandleOpen = async () => {
+    setShowOpenRiddle((r) => !r);
+  };
+
   const syncOpenRiddle = async function () {
-    if (showOpenRiddle) {
-      let openResult = await API.getRiddleByState("open");
-      // console.log(openResult);
-      for (let r of openResult) {
-        let result = await API.GetHistoryByRid(r.rid);
-        openRiddlesHistory = openRiddlesHistory.concat(result);
-      }
-      setOpenRiddles(openResult);
+    let openResult = await API.getRiddleByState("open");
+    for (let r of openResult) {
+      await r.getHistory();
     }
+    console.log(openResult);
+    setOpenRiddles(openResult);
   };
 
   const syncCloseRiddle = async function () {
-    if (showCloseRiddle) {
-      let closedResult = await API.getRiddleByState("close");
-      for (let r of closedResult) {
-        let result = await API.GetHistoryByRid(r.rid);
-        closedRiddlesHistory = closedRiddlesHistory.concat(result);
-      }
-
-      setClosedRiddles(closedResult);
+    let closedResult = await API.getRiddleByState("close");
+    for (let r of closedResult) {
+      r.getHistory();
     }
+
+    setClosedRiddles(closedResult);
   };
 
   useEffect(() => {
@@ -70,18 +56,6 @@ const LoginRiddlesTable = (props) => {
       setUpdate(false);
     }
   }, [update]);
-
-  const clickHandleOpen = async () => {
-    setShowOpenRiddle((r) => !r);
-    let openResult = await API.getRiddleByState("open");
-    // console.log(openResult);
-    for (let r of openResult) {
-      let result = await API.GetHistoryByRid(r.rid);
-      openRiddlesHistory = openRiddlesHistory.concat(result);
-    }
-    setOpenRiddles(openResult);
-    setHistory(openRiddlesHistory);
-  };
 
   return (
     <Container>
@@ -98,6 +72,7 @@ const LoginRiddlesTable = (props) => {
               onChange={clickHandleOpen}
               type="switch"
               id="custom-switch"
+              defaultChecked={true}
               label="Show All Open riddles"
             />
           </Form>
@@ -121,13 +96,12 @@ const LoginRiddlesTable = (props) => {
             openRiddles={openRiddles}
             setOpenRiddles={setOpenRiddles}
             setUpdate={setUpdate}
-            history={history}
           />
         )}
       </Row>
       <Row>
         {showCloseRiddle && (
-          <ClosedRiddlesTable closedRiddles={closedRiddles} history={history} />
+          <ClosedRiddlesTable closedRiddles={closedRiddles} />
         )}
       </Row>
     </Container>

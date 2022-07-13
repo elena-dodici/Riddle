@@ -1,29 +1,32 @@
 const UserDao = require("./PersistantManager");
 
-exports.putPointsById = async function (req, res) {
-  //get point
+// exports.putPointsById = async function (req, res) {
+//   //get point
 
-  let userId = req.user.id;
-  let oldpoint = await UserDao.loadOneByOneAttribute(
-    "User",
-    "points",
-    "id",
-    userId
-  );
-  let points = req.body.points;
-  let newPoint = points + oldpoint.points;
+//   let userId = req.user.id;
+//   let oldpoint = await UserDao.loadOneByOneAttribute(
+//     "User",
+//     "points",
+//     "id",
+//     userId
+//   );
+//   let points = req.body.points;
+//   let newPoint = points + oldpoint.points;
 
-  let result = await UserDao.update("User", { points: newPoint }, "id", userId);
+//   let result = await UserDao.update("User", { points: newPoint }, "id", userId);
 
-  if (result) res.status(200).json();
-  else res.status(500).json();
-};
+//   if (result) res.status(200).json();
+//   else res.status(500).json();
+// };
 
-exports.getNameById = async function (req, res) {
+exports.getUserById = async function (req, res) {
   let id = req.params.id;
   try {
-    let result = await UserDao.loadOneByOneAttribute("User", "name", "id", id);
-
+    let result = await UserDao.loadOneByAttributeSelected("User", "id", id, [
+      "name",
+      "points",
+    ]);
+    console.log(result);
     return res.status(200).json(result);
   } catch (err) {
     console.log(err);

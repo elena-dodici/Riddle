@@ -10,11 +10,10 @@ import {
 } from "react-bootstrap";
 import { TiWarningOutline } from "react-icons/ti";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import AuthContext from "./AuthProvider";
 import API from "../API";
 import dayjs from "dayjs";
-import Timer from "./Timer.js";
 
 const OpenRiddlesTable = (props) => {
   return (
@@ -25,6 +24,7 @@ const OpenRiddlesTable = (props) => {
           <tr>
             <th>Content</th>
             <th>difficulty</th>
+            <th>Remaining Time</th>
             <th>Reply</th>
           </tr>
         </thead>
@@ -35,8 +35,8 @@ const OpenRiddlesTable = (props) => {
               riddle={r}
               index={index}
               setOpenRiddles={props.setOpenRiddles}
-              history={props.history}
               setUpdate={props.setUpdate}
+              closeRiddle={props.closeRiddle}
             />
           ))}
         </tbody>
@@ -47,6 +47,35 @@ const OpenRiddlesTable = (props) => {
 
 const OpenRRow = (props) => {
   //console.log(props.riddle);
+  const timeout = 1000;
+  const [remTime, setRemTime] = useState();
+
+  const handleTimeOut = () => {
+    if (props.riddle.expiration) {
+      let now = dayjs();
+      let exp = dayjs(props.riddle.expiration);
+      let rem = Math.floor(exp.diff(now) / 1000);
+      if (rem < 0) {
+        API.UpdateStateByRid(props.riddle.rid, "expire");
+        setRemTime(0);
+        props.setUpdate(true);
+      } else setRemTime(rem);
+    } else {
+      setRemTime(0);
+    }
+  };
+
+  useEffect(() => {
+    let timer = setTimeout(() => handleTimeOut(), timeout);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [remTime]);
+
+  useEffect(() => {
+    handleTimeOut();
+  });
+
   const setRiddle = (nr) => {
     props.setOpenRiddles((or) => {
       let newR = [...or];
@@ -56,10 +85,14 @@ const OpenRRow = (props) => {
   };
   return (
     <tr>
-      <OpenRData key={props.riddle.rid} {...props} />
+      <OpenRData key={props.riddle.rid} remTime={remTime} {...props} />
 
       <td>
-        <OpenRAction setRiddle={setRiddle} {...props}></OpenRAction>
+        <OpenRAction
+          setRiddle={setRiddle}
+          remTime={remTime}
+          {...props}
+        ></OpenRAction>
       </td>
     </tr>
   );
@@ -67,22 +100,21 @@ const OpenRRow = (props) => {
 
 const OpenRAction = (props) => {
   const [show, setShow] = useState(false);
-
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [answer, setAnswer] = useState("");
   const { auth } = useContext(AuthContext);
+
   const checkAnswer = (answer) => {
     let prposedRes = answer.trim().toLowerCase();
     let realanswer = props.riddle.answer.trim().toLowerCase();
-    if (prposedRes === realanswer || prposedRes.includes(realanswer))
-      return true;
+    if (prposedRes === realanswer) return true;
     else return false;
   };
 
   const assistCheck = () => {
-    for (let i of props.history) {
-      if (i.rid === props.riddle.rid && i.repId === auth.id) return true;
+    for (let hist of props.riddle.history) {
+      if (hist.repId === auth.id) return true;
       // else return false;
     }
     return false;
@@ -94,6 +126,7 @@ const OpenRAction = (props) => {
     else return false;
   };
   const disable = handleDisabled();
+
   const handleSumbit = async () => {
     let result = checkAnswer(answer);
     let newRiddle = { ...props.riddle };
@@ -103,40 +136,49 @@ const OpenRAction = (props) => {
       answerTime: dayjs().format("YYYY/MM/DD HH:mm:ss"),
       answer: answer,
     };
-
+    let rowResult = await API.AddNewHistory(NewHistory);
+    if (rowResult === "already closed")
+      alert("Sorry,this one is already answered by other user");
     if (result === true) {
-      console.log("enter right result");
       //update score
 
       newRiddle.state = "close";
-      props.setRiddle(newRiddle);
-      let score = newRiddle.difficulty;
 
-      if (score === "easy") {
-        await API.UpdateUserPoints(auth.id, 1);
-      } else if (score === "medium") await API.UpdateUserPoints(auth.id, 2);
-      else if (score === "hard") await API.UpdateUserPoints(auth.id, 3);
-      else await API.UpdateUserPoints(auth.id, 0);
+      //add in history front
+      newRiddle.history.push(NewHistory);
 
-      //update history
-      NewHistory["result"] = "T";
-      //update close time
-      await API.UpdateCloseTime(
-        newRiddle.rid,
-        dayjs().format("YYYY/MM/DD HH:mm:ss")
-      );
+      //add points in user front
+      if (newRiddle.difficulty === "easy") {
+        let pointRow = await API.getUserById(auth.id);
+        pointRow.points += 1;
+      } else if (newRiddle.difficulty === "medium") {
+        let pointRow = await API.getUserById(auth.id);
+        pointRow.points += 2;
+      } else if (newRiddle.difficulty === "hard") {
+        let pointRow = await API.getUserById(auth.id);
+        pointRow.points += 3;
+      }
 
       alert("Congratulation! Your result is correct!");
     } else {
-      console.log("enter wrong result");
-      NewHistory["result"] = "F";
-      alert("Sorry, Wrong answer,You lose your try.");
+      alert("Sorry, Wrong answer,You lose your chance.");
     }
-    await API.AddNewHistory(NewHistory);
+
     setShow(false);
     props.setUpdate(true);
   };
 
+  const handleShowHint1 = () => {
+    if (props.remTime > 0 && props.remTime < 0.5 * props.riddle.duration)
+      return true;
+  };
+  const showHint1 = handleShowHint1();
+
+  const handleShowHint2 = () => {
+    if (props.remTime > 0 && props.remTime < 0.25 * props.riddle.duration)
+      return true;
+  };
+  const showHint2 = handleShowHint2();
   return (
     <>
       <Button disabled={disable} onClick={handleShow}>
@@ -180,16 +222,37 @@ const OpenRAction = (props) => {
                   style={{ color: "red" }}
                   plaintext
                   readOnly
-                  value={122222}
+                  value={
+                    props.remTime
+                      ? Math.floor(props.remTime / 60)
+                          .toString()
+                          .padStart(2, "0") +
+                        " : " +
+                        (props.remTime % 60).toString().padStart(2, "0")
+                      : "You are first replier"
+                  }
                 />
               </Col>
             </Row>
+            <Row className="justify-content-md-center">
+              duration:{props.riddle.duration}
+            </Row>
             <Row>
               <Row md="auto">
-                <h5>hint1:</h5>
+                <h6>Hint1:</h6>
+                {showHint1 ? (
+                  <p>{props.riddle.hint1}</p>
+                ) : (
+                  <p>Will see when remain time less than 50%</p>
+                )}
               </Row>
               <Row md="auto">
-                <h5>hint2:</h5>
+                <h6>Hint2:</h6>
+                {showHint2 ? (
+                  <p>{props.riddle.hint2}</p>
+                ) : (
+                  <p>Will see when remain time less than 25%</p>
+                )}
               </Row>
               <Form.Group className="mb-3" controlId="answer">
                 <Form.Label>Your Answer</Form.Label>
@@ -224,7 +287,13 @@ const OpenRData = (props) => {
       <td>{props.riddle.content}</td>
       <td>{props.riddle.difficulty}</td>
       <td>
-        <Timer expiration={props.riddle.expiration} />
+        {props.remTime
+          ? Math.floor(props.remTime / 60)
+              .toString()
+              .padStart(2, "0") +
+            " : " +
+            (props.remTime % 60).toString().padStart(2, "0")
+          : "No one answer yet"}
       </td>
     </>
   );

@@ -28,8 +28,8 @@ router.delete("/session/current", isLoggedIn, (req, res) => {
   });
 });
 
-router.put("/user/:id", isLoggedIn, u.putPointsById);
+// router.put("/user/:id", isLoggedIn, u.putPointsById);
 router.get("/users", u.getPointsOrder);
-router.get("/username/:id", u.getNameById);
+router.get("/user/:id", isLoggedIn, u.getUserById);
 
 module.exports = router;

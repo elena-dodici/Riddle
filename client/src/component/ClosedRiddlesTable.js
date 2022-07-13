@@ -1,30 +1,10 @@
-import {
-  Table,
-  Row,
-  Col,
-  Button,
-  Accordion,
-  OverlayTrigger,
-  Tooltip,
-  Container,
-} from "react-bootstrap";
+import { Table, Accordion } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useContext, useState } from "react";
-import AuthContext from "./AuthProvider";
+import { useState } from "react";
+
 import API from "../API";
 
 const ClosedRiddlesTable = (props) => {
-  const getRHis = (r) => {
-    //find istory list related to the input rid
-    let historyList = [];
-    for (let i of props.history) {
-      if (i.rid === r) {
-        historyList = historyList.concat(i);
-      }
-    }
-    return historyList;
-  };
-
   return (
     <>
       <h2> Closed Riddles</h2>
@@ -32,14 +12,14 @@ const ClosedRiddlesTable = (props) => {
         <thead>
           <tr>
             <th>Content</th>
-            <th>Answer History</th>
+            <th width="220">Answer History</th>
             <th>Correct Answer</th>
-            <th>winner User Name</th>
+            <th>winner Name</th>
           </tr>
         </thead>
         <tbody>
           {props.closedRiddles.map((r) => (
-            <CloseRRow key={r.rid} riddle={r} historyList={getRHis(r.rid)} />
+            <CloseRRow key={r.rid} riddle={r} />
           ))}
         </tbody>
       </Table>
@@ -51,48 +31,36 @@ const CloseRRow = (props) => {
   const [winnerName, setWinnerName] = useState("");
   let rightRes;
 
-  const getNameById = async (r) => {
+  const getUserById = async (r) => {
     //let nm = {};
-    let result = await API.GetUserNameById(r);
+    let result = await API.getUserById(r);
     return result.name;
   };
   //get repId and answer of the hist resulr="True"
-  if (!!props.historyList) {
-    for (let h of props.historyList) {
-      if (h.result === "T") {
-        rightRes = h.answer;
-        getNameById(h.repId).then((res) => {
-          setWinnerName(res);
-        });
-        break;
-      }
+
+  for (let h of props.riddle.history) {
+    if (h.result === "T") {
+      rightRes = h.answer;
+      getUserById(h.repId).then((res) => {
+        setWinnerName(res);
+      });
+      break;
     }
   }
 
-  if (winnerName)
-    return (
-      <tr>
-        <CloseRData
-          key={props.riddle.rid}
-          riddle={props.riddle}
-          historyList={props.historyList}
-          winnerName={winnerName}
-          rightRes={rightRes}
-        />
-      </tr>
-    );
+  return (
+    <tr>
+      <CloseRData
+        key={props.riddle.rid}
+        riddle={props.riddle}
+        winnerName={winnerName}
+        rightRes={rightRes}
+      />
+    </tr>
+  );
 };
 
 const CloseRData = (props) => {
-  //get all answer as list
-  let renderList = [];
-
-  for (let i of props.historyList) {
-    if (i.answer.length > 0) {
-      renderList = renderList.concat(i.answer);
-    }
-  }
-
   return (
     <>
       <td>{props.riddle.content}</td>
@@ -101,7 +69,7 @@ const CloseRData = (props) => {
           <Accordion.Item eventKey="0">
             <Accordion.Header>Answer History</Accordion.Header>
             <Accordion.Body>
-              {renderList.length > 0 ? (
+              {props.riddle.history.length > 0 ? (
                 <>
                   <Table size="sm">
                     <thead>
@@ -111,7 +79,7 @@ const CloseRData = (props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {props.historyList.map((h) => (
+                      {props.riddle.history.map((h) => (
                         <tr key={h.id}>
                           <HistoryRow info={h} />
                         </tr>
@@ -126,8 +94,8 @@ const CloseRData = (props) => {
           </Accordion.Item>
         </Accordion>
       </td>
-      <td>{props.rightRes}</td>
-      <td>{props.winnerName}</td>
+      <td>{props.rightRes ? props.rightRes : "No correct Reply"}</td>
+      <td>{props.winnerName ? props.winnerName : "No winner"}</td>
     </>
   );
 };

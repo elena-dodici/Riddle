@@ -21,11 +21,18 @@ const RiddlesTable = (props) => {
 };
 
 const RiddleRow = (props) => {
-  return (
-    <tr>
-      <RiddleData key={props.riddle.rid} riddle={props.riddle} />
-    </tr>
-  );
+  if (props.riddle.state === "close")
+    return (
+      <tr bgcolor="#ccffff">
+        <RiddleData key={props.riddle.rid} riddle={props.riddle} />
+      </tr>
+    );
+  else
+    return (
+      <tr>
+        <RiddleData key={props.riddle.rid} riddle={props.riddle} />
+      </tr>
+    );
 };
 
 const RiddleData = (props) => {
