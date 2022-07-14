@@ -67,9 +67,9 @@ const OpenRRow = (props) => {
       let exp = dayjs(props.riddle.expiration);
       let rem = Math.floor(exp.diff(now) / 1000);
       if (rem < 0) {
-        API.UpdateStateByRid(props.riddle.rid, "expire");
-
-        props.setUpdate(true);
+        API.UpdateStateByRid(props.riddle.rid, "expire").then(() => {
+          props.setUpdate(true);
+        });
         return 0;
       } else return rem;
     } else {
