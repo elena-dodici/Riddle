@@ -16,7 +16,6 @@ const MyRiddlesTable = () => {
   const [MyopenRiddles, setMyOpenRiddles] = useState([]);
   const [update, setUpdate] = useState(true);
   const [points, setPoints] = useState(0);
-
   const clickHandleClosed = async () => {
     setShowCloseRiddle((r) => !r);
   };
@@ -35,7 +34,7 @@ const MyRiddlesTable = () => {
     for (let r of MyRiddles) {
       if (r.state === "open") {
         MyOpenRiddles.push(r);
-        r.getHistory();
+        await r.getHistory();
       }
     }
     setMyOpenRiddles(MyOpenRiddles);
@@ -47,7 +46,7 @@ const MyRiddlesTable = () => {
     for (let r of MyRiddles) {
       if (r.state === "close") {
         MyCloseRiddles.push(r);
-        r.getHistory();
+        await r.getHistory();
       }
     }
     setMyClosedRiddles(MyCloseRiddles);
@@ -104,17 +103,18 @@ const MyRiddlesTable = () => {
         )}
       </Row>
       <Row>
-        {showCloseRiddle && (
-          <ClosedRiddlesTable closedRiddles={MyclosedRiddles} />
-        )}
-      </Row>
-      <Row>
         {showOpenRiddle && (
           <MyOpenRiddlesTable
             myOpenRiddles={MyopenRiddles}
             setOpenRiddles={setMyOpenRiddles}
+            sync={syncOpenRiddle}
             setUpdate={setUpdate}
           />
+        )}
+      </Row>
+      <Row>
+        {showCloseRiddle && (
+          <ClosedRiddlesTable closedRiddles={MyclosedRiddles} />
         )}
       </Row>
     </Container>

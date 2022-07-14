@@ -139,7 +139,7 @@ const OpenRAction = (props) => {
     };
 
     try {
-      let rowResult = await API.AddNewHistory(NewHistory); // if (rowResult === "Closed") alert("Sorry,this one already closed");
+      await API.AddNewHistory(NewHistory);
       if (result === true) {
         //update score
 
