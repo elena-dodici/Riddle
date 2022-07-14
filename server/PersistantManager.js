@@ -12,11 +12,19 @@ const db = new sqlite.Database("DB.sqlite3", (err) => {
 //ORDER BY column1,  ... ASC|DESC;
 exports.loadAllRowsByOrder = async function loadAllRowsByOrder(
   tableName,
-  orderAttr
+  orderAttr,
+  selectedNames
 ) {
   return new Promise((resolve, reject) => {
+    const selectedAttributes = selectedNames.join(",");
     const sql =
-      "SELECT * FROM " + tableName + " ORDER BY " + orderAttr + " DESC ";
+      "SELECT " +
+      selectedAttributes +
+      " FROM " +
+      tableName +
+      " ORDER BY " +
+      orderAttr +
+      " DESC ";
     db.get("PRAGMA foreign_keys =ON");
     db.all(sql, (err, rows) => {
       if (err) {
@@ -116,33 +124,6 @@ exports.loadOneByAttributeSelected = async function loadOneByAttributeSelected(
     });
   });
 };
-
-//SELECT name FROM User WHERE id =1;
-// exports.loadOneByOneAttribute = async function loadOneRowByOneAttribute(
-//   tableName,
-//   seleceName,
-//   attrName,
-//   val
-// ) {
-//   return new Promise((resolve, reject) => {
-//     const sql =
-//       "SELECT " +
-//       seleceName +
-//       " FROM " +
-//       tableName +
-//       " WHERE " +
-//       attrName +
-//       "= ?";
-//     db.get("PRAGMA foreign_keys =ON");
-//     db.get(sql, [val], (err, rows) => {
-//       if (err) {
-//         reject(err);
-//         return;
-//       }
-//       resolve(rows);
-//     });
-//   });
-// };
 
 //post history or riddle
 //INSERT INTO history ("id","rid","repid","answerTime","answer","result")VALUES ("1","TEST1",...)

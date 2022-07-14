@@ -104,6 +104,7 @@ const LoginRiddlesTable = () => {
             openRiddles={openRiddles}
             setOpenRiddles={setOpenRiddles}
             setUpdate={setUpdate}
+            sync={syncOpenRiddle}
           />
         )}
       </Row>

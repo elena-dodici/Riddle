@@ -12,6 +12,7 @@ import {
   DefaultRoute,
   RiddleFormRoute,
   RiddleRoute,
+  RankingRoute,
 } from "./component/View";
 import AuthContext from "./component/AuthProvider";
 
@@ -103,6 +104,17 @@ function App() {
             ) : (
               <LoginRoute logIn={handleLogin} message={message} />
             )
+          }
+        />
+        <Route
+          path="/ranking"
+          element={
+            <RankingRoute
+              loggedIn={loggedIn}
+              loggedOut={handleLogout}
+              link="/"
+              info="Return Main Page"
+            ></RankingRoute>
           }
         />
 

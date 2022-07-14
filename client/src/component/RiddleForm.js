@@ -28,7 +28,7 @@ function RiddleForm(props) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     riddle["state"] = "open";
-    riddle["createTime"] = dayjs().format("YYYY/MM/DD HH:mm:ss");
+    riddle["createTime"] = dayjs();
     riddle["closeTime"] = null;
     riddle["authorId"] = auth.id;
     riddle["history"] = [];
@@ -45,7 +45,7 @@ function RiddleForm(props) {
         riddle.duration,
         "open",
         riddle.answer,
-        dayjs().format("YYYY/MM/DD HH:mm:ss"),
+        dayjs(),
         null,
         null,
         auth.id

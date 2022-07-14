@@ -41,7 +41,6 @@ const LogInForm = (props) => {
                   title='valid Email need at least one "." after@'
                 />
                 <Form.Text className="text-muted">
-                  {" "}
                   We will never share your email with anyone else.
                 </Form.Text>
                 <Form.Control.Feedback type="invalid">

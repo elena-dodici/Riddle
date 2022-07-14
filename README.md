@@ -4,7 +4,10 @@
 ## React Client Application Routes
 
 - Route `/`: Main Page
-- Route `/MyInfo`: Userss pushlished riddles 
+- Route `/MyInfo`: Users' pushlished riddles 
+- Route `/rankinng`: Users' ranking
+- Route `/add` : Add new Riddle
+= Route `/login`"Login Page
 - Default Route: No page found
 
 ## API Server

@@ -1,45 +1,37 @@
 const RDao = require("./PersistantManager");
 const dayjs = require("dayjs");
-// exports.getRiddleByState = {
-//   state: {
-//     isInt: {
-//       option: { min: 0 },
-//     },
-//   },
-// };
 
-// exports.postPlanByIdSchema = {
-//   id: {
-//     notEmpty: true,
-//     isNumeric: true,
-//     isInt: {
-//       option: { min: 0 },
-//     },
-//   },
-// };
-// exports.deletePlanByIdSchema = {
-//   id: {
-//     notEmpty: true,
-//     isNumeric: true,
-//     isInt: {
-//       option: { min: 0 },
-//     },
-//   },
-// };
-
-// exports.postRiddleSchema = {
-//   id: {
-//     notEmpty: true,
-//     isNumeric: true,
-//     isInt: {
-//       option: { min: 0 },
-//     },
-//   },
-// };
+exports.postRiddleSchema = {
+  content: {
+    notEmpty: true,
+    isString: true,
+  },
+  duration: {
+    isInt: {
+      option: { min: 30, max: 600 },
+    },
+  },
+  hint1: {
+    notEmpty: true,
+    isString: true,
+  },
+  hint2: {
+    notEmpty: true,
+    isString: true,
+  },
+  answer: {
+    notEmpty: true,
+    isString: true,
+  },
+  difficulty: {
+    in: ["easy", "medium", "hard"],
+  },
+};
 
 async function postRiddle(req, res) {
   try {
     let riddle = req.body.riddle;
+    riddle["createTime"] = dayjs();
     delete riddle["history"];
     await RDao.store("Riddle", riddle);
     res.status(200).json();

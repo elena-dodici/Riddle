@@ -4,8 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const Ranking = (props) => {
   const renderFunction = () => {
     let renderjsx = [];
-    let looptime = Math.min(3, props.userList.length);
-    for (let i = 0; i < looptime; i++) {
+    for (let i = 0; i < props.userList.length; i++) {
       renderjsx.push(
         <ListGroup.Item
           as="li"
@@ -13,10 +12,10 @@ const Ranking = (props) => {
           key={i}
         >
           <div className="ms-2 me-auto">
-            <div className="fw-bold">{props.userList[i].name}</div>
+            <div className="fw-bold">Name : {props.userList[i].name}</div>
           </div>
           <Badge bg="primary" pill>
-            {props.userList[i].point}
+            Score : {props.userList[i].point}
           </Badge>
         </ListGroup.Item>
       );
@@ -30,7 +29,7 @@ const Ranking = (props) => {
       <Row className="m-auto align-self-center">
         <Col>
           <Card style={{ width: "40rem" }}>
-            <h2>Our Top Three</h2>
+            <h2 className="mb-3 ">Our Top Three</h2>
             <ListGroup as="ol" numbered>
               {renderFunction()}
             </ListGroup>

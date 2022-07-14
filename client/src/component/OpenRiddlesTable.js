@@ -17,6 +17,20 @@ import dayjs from "dayjs";
 import "./table.css";
 
 const OpenRiddlesTable = (props) => {
+  //get info every second
+  const [curTime, setCurTime] = useState(0);
+
+  useEffect(() => {
+    const handleTimeOut = () => {
+      setCurTime(Date.now());
+      props.sync();
+    };
+    let timer = setTimeout(() => handleTimeOut(), 1000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [curTime]);
+
   return (
     <>
       <h2> Open Riddles</h2>
@@ -47,35 +61,23 @@ const OpenRiddlesTable = (props) => {
 };
 
 const OpenRRow = (props) => {
-  //console.log(props.riddle);
-  const timeout = 1000;
-  const [remTime, setRemTime] = useState();
-
-  const handleTimeOut = () => {
+  const calcRemTime = () => {
     if (props.riddle.expiration) {
       let now = dayjs();
       let exp = dayjs(props.riddle.expiration);
       let rem = Math.floor(exp.diff(now) / 1000);
       if (rem < 0) {
         API.UpdateStateByRid(props.riddle.rid, "expire");
-        setRemTime(-1);
+
         props.setUpdate(true);
-      } else setRemTime(rem);
+        return 0;
+      } else return rem;
     } else {
-      setRemTime(0);
+      return 0;
     }
   };
 
-  useEffect(() => {
-    let timer = setTimeout(() => handleTimeOut(), timeout);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [remTime]);
-
-  useEffect(() => {
-    handleTimeOut();
-  });
+  const remTime = calcRemTime();
 
   const setRiddle = (nr) => {
     props.setOpenRiddles((or) => {
@@ -134,7 +136,7 @@ const OpenRAction = (props) => {
     let NewHistory = {
       rid: newRiddle.rid,
       repId: auth.id,
-      answerTime: dayjs().format("YYYY/MM/DD HH:mm:ss"),
+      answerTime: dayjs(),
       answer: answer,
     };
 
@@ -301,7 +303,7 @@ const OpenRData = (props) => {
               .padStart(2, "0") +
             " : " +
             (props.remTime % 60).toString().padStart(2, "0")
-          : "No one answer yet"}
+          : "No response"}
       </td>
     </>
   );

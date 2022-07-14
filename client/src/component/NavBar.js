@@ -1,18 +1,21 @@
-import { Navbar, Button, Nav, Container, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav, Container, NavDropdown } from "react-bootstrap";
 import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+
 import "../App.css";
 import AuthContext from "./AuthProvider";
 
 const VisitNavBar = () => {
   return (
-    <Navbar collapseOnSelect expand="lg" bg="light" variant="light">
-      <Navbar.Brand className="me-auto">Riddle List</Navbar.Brand>
-      <Link to="/login">
-        <Button className="ms-10" variant="outline-success">
-          Login
-        </Button>
-      </Link>
+    <Navbar bg="light" variant="light">
+      <Container>
+        <Navbar.Brand className="me-auto">Riddle List</Navbar.Brand>
+
+        <Nav className="ms-auto">
+          <Nav.Link href="/ranking">Ranking</Nav.Link>
+          <Nav.Link href="/"> Main Page</Nav.Link>
+          <Nav.Link href="/login">Log In</Nav.Link>
+        </Nav>
+      </Container>
     </Navbar>
   );
 };
@@ -30,9 +33,9 @@ const UserNavBar = (props) => {
       <Navbar.Toggle aria-controls="responsive-navbar-nav" />
       <Navbar.Collapse id="responsive-navbar-nav">
         <Nav className="ms-auto">
-          <NavDropdown title="My Riddle" id="collasible-nav-dropdown">
+          <NavDropdown title="User Info" id="collasible-nav-dropdown">
             <NavDropdown.Item href={props.link}>{props.info}</NavDropdown.Item>
-
+            <NavDropdown.Item href="/ranking">Ranking</NavDropdown.Item>
             <NavDropdown.Item onClick={props.logout}>Log Out</NavDropdown.Item>
           </NavDropdown>
         </Nav>

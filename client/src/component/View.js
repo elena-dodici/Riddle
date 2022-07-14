@@ -34,17 +34,17 @@ const HomePage = (props) => {
   const [Riddles, setRiddles] = useState([]);
   const [usersOrderList, setUsersOrderList] = useState([]);
 
-  const getAllRiddles = async () => {
-    const Riddles = await API.getAllRiddles();
-    setRiddles(Riddles);
-  };
-
   const getUsersList = async () => {
     const OrderUsesList = await API.GetUserOrderedList();
     setUsersOrderList(OrderUsesList);
   };
 
-  //run once afteri nitial rendering
+  const getAllRiddles = async () => {
+    const Riddles = await API.getAllRiddles();
+    setRiddles(Riddles);
+  };
+
+  //run once when mount
   useEffect(() => {
     getAllRiddles();
     getUsersList();
@@ -58,7 +58,7 @@ const HomePage = (props) => {
             logout={props.loggedOut}
             link={props.link}
             info={props.info}
-            // riddle={riddle}
+            userList={usersOrderList}
           ></UserNavBar>
         ) : (
           <VisitNavBar></VisitNavBar>
@@ -69,10 +69,7 @@ const HomePage = (props) => {
         {props.loggedIn ? (
           <LoginRiddlesTable Riddles={Riddles}></LoginRiddlesTable>
         ) : (
-          <>
-            <Ranking userList={usersOrderList}></Ranking>
-            <RiddlesTable Riddles={Riddles}></RiddlesTable>
-          </>
+          <RiddlesTable Riddles={Riddles}></RiddlesTable>
         )}
       </Row>
     </Container>
@@ -84,6 +81,39 @@ const DefaultRoute = () => {
     <Row>
       <h1>No Page found</h1>
     </Row>
+  );
+};
+
+const RankingRoute = (props) => {
+  const [usersOrderList, setUsersOrderList] = useState([]);
+
+  const getUsersList = async () => {
+    const OrderUsesList = await API.GetUserOrderedList();
+    setUsersOrderList(OrderUsesList);
+  };
+
+  useEffect(() => {
+    getUsersList();
+  }, []);
+
+  return (
+    <Container>
+      <Row>
+        {props.loggedIn ? (
+          <UserNavBar
+            logout={props.loggedOut}
+            link={props.link}
+            info={props.info}
+            userList={usersOrderList}
+          ></UserNavBar>
+        ) : (
+          <VisitNavBar></VisitNavBar>
+        )}
+      </Row>
+      <Row>
+        <Ranking userList={usersOrderList}></Ranking>;
+      </Row>
+    </Container>
   );
 };
 
@@ -104,4 +134,11 @@ const RiddleRoute = (props) => {
   );
 };
 
-export { LoginRoute, HomePage, DefaultRoute, RiddleFormRoute, RiddleRoute };
+export {
+  LoginRoute,
+  HomePage,
+  DefaultRoute,
+  RiddleFormRoute,
+  RiddleRoute,
+  RankingRoute,
+};

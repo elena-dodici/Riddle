@@ -1,4 +1,5 @@
 const express = require("express");
+const { checkSchema } = require("express-validator");
 const router = express.Router();
 const r = require("./RiddleController");
 function isLoggedIn(req, res, next) {
@@ -14,7 +15,12 @@ router.get("/riddles", r.getRiddles);
 router.get("/riddles/:state", isLoggedIn, r.getRiddlesByState);
 
 //get riddle by authorId
-router.get("/riddle/:uid", isLoggedIn, r.getRiddlesByAutId);
+router.get(
+  "/riddle/:uid",
+  isLoggedIn,
+  checkSchema(r.postRiddleSchema),
+  r.getRiddlesByAutId
+);
 
 router.post("/riddle", isLoggedIn, r.postRiddle);
 
