@@ -41,17 +41,21 @@ const LoginRiddlesTable = () => {
   const syncCloseRiddle = async function () {
     let closedResult = await API.getRiddleByState("close");
     for (let r of closedResult) {
-      r.getHistory();
+      await r.getHistory();
     }
 
     setClosedRiddles(closedResult);
   };
 
+  const sync = () => {
+    syncOpenRiddle();
+    syncCloseRiddle();
+    syncUserPointById(auth.id);
+  };
+
   useEffect(() => {
     if (update) {
-      syncOpenRiddle();
-      syncCloseRiddle();
-      syncUserPointById(auth.id);
+      sync();
       setUpdate(false);
     }
   }, [update]);
@@ -104,7 +108,7 @@ const LoginRiddlesTable = () => {
             openRiddles={openRiddles}
             setOpenRiddles={setOpenRiddles}
             setUpdate={setUpdate}
-            sync={syncOpenRiddle}
+            sync={sync}
           />
         )}
       </Row>

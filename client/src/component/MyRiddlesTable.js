@@ -52,11 +52,14 @@ const MyRiddlesTable = () => {
     setMyClosedRiddles(MyCloseRiddles);
   };
 
+  const sync = () => {
+    syncOpenRiddle();
+    syncCloseRiddle();
+    syncUserPointById(auth.id);
+  };
   useEffect(() => {
     if (update) {
-      syncOpenRiddle();
-      syncCloseRiddle();
-      syncUserPointById(auth.id);
+      sync();
       setUpdate(false);
     }
   }, [update]);
@@ -107,7 +110,7 @@ const MyRiddlesTable = () => {
           <MyOpenRiddlesTable
             myOpenRiddles={MyopenRiddles}
             setOpenRiddles={setMyOpenRiddles}
-            sync={syncOpenRiddle}
+            sync={sync}
             setUpdate={setUpdate}
           />
         )}
