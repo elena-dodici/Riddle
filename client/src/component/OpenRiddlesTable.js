@@ -14,6 +14,7 @@ import { useContext, useState, useEffect } from "react";
 import AuthContext from "./AuthProvider";
 import API from "../API";
 import dayjs from "dayjs";
+import "./table.css";
 
 const OpenRiddlesTable = (props) => {
   return (
@@ -57,7 +58,7 @@ const OpenRRow = (props) => {
       let rem = Math.floor(exp.diff(now) / 1000);
       if (rem < 0) {
         API.UpdateStateByRid(props.riddle.rid, "expire");
-        setRemTime(0);
+        setRemTime(-1);
         props.setUpdate(true);
       } else setRemTime(rem);
     } else {
@@ -136,32 +137,34 @@ const OpenRAction = (props) => {
       answerTime: dayjs().format("YYYY/MM/DD HH:mm:ss"),
       answer: answer,
     };
-    let rowResult = await API.AddNewHistory(NewHistory);
-    if (rowResult === "already closed")
-      alert("Sorry,this one is already answered by other user");
-    if (result === true) {
-      //update score
 
-      newRiddle.state = "close";
+    try {
+      let rowResult = await API.AddNewHistory(NewHistory); // if (rowResult === "Closed") alert("Sorry,this one already closed");
+      if (result === true) {
+        //update score
 
-      //add in history front
-      newRiddle.history.push(NewHistory);
+        newRiddle.state = "close";
 
-      //add points in user front
-      if (newRiddle.difficulty === "easy") {
-        let pointRow = await API.getUserById(auth.id);
-        pointRow.points += 1;
-      } else if (newRiddle.difficulty === "medium") {
-        let pointRow = await API.getUserById(auth.id);
-        pointRow.points += 2;
-      } else if (newRiddle.difficulty === "hard") {
-        let pointRow = await API.getUserById(auth.id);
-        pointRow.points += 3;
+        //add in history front
+        newRiddle.history.push(NewHistory);
+
+        //add points in user front
+        if (newRiddle.difficulty === "easy") {
+          let pointRow = await API.getUserById(auth.id);
+          pointRow.points += 1;
+        } else if (newRiddle.difficulty === "medium") {
+          let pointRow = await API.getUserById(auth.id);
+          pointRow.points += 2;
+        } else if (newRiddle.difficulty === "hard") {
+          let pointRow = await API.getUserById(auth.id);
+          pointRow.points += 3;
+        }
+        alert("Congratulation! Your result is correct!");
+      } else {
+        alert("Sorry, Wrong answer,You lose your chance.");
       }
-
-      alert("Congratulation! Your result is correct!");
-    } else {
-      alert("Sorry, Wrong answer,You lose your chance.");
+    } catch (err) {
+      if (err === "Closed") alert("Sorry,this one already closed");
     }
 
     setShow(false);
@@ -179,6 +182,7 @@ const OpenRAction = (props) => {
       return true;
   };
   const showHint2 = handleShowHint2();
+
   return (
     <>
       <Button disabled={disable} onClick={handleShow}>
@@ -201,7 +205,7 @@ const OpenRAction = (props) => {
       )}
 
       <Modal
-        show={show}
+        show={show && props.remTime >= 0}
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
@@ -254,6 +258,7 @@ const OpenRAction = (props) => {
                   <p>Will see when remain time less than 25%</p>
                 )}
               </Row>
+
               <Form.Group className="mb-3" controlId="answer">
                 <Form.Label>Your Answer</Form.Label>
                 <Form.Control
@@ -264,6 +269,9 @@ const OpenRAction = (props) => {
                     setAnswer(e.target.value);
                   }}
                 />
+                <Form.Text className="text-muted">
+                  Only one chance allowed
+                </Form.Text>
               </Form.Group>
             </Row>
           </Form>
@@ -284,10 +292,10 @@ const OpenRAction = (props) => {
 const OpenRData = (props) => {
   return (
     <>
-      <td>{props.riddle.content}</td>
+      <td className="column-left">{props.riddle.content}</td>
       <td>{props.riddle.difficulty}</td>
       <td>
-        {props.remTime
+        {props.remTime > 0
           ? Math.floor(props.remTime / 60)
               .toString()
               .padStart(2, "0") +

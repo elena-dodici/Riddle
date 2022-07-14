@@ -61,10 +61,9 @@ const CloseRRow = (props) => {
 };
 
 const CloseRData = (props) => {
-  console.log(props.riddle.history);
   return (
     <>
-      <td>{props.riddle.content}</td>
+      <td className="column-left">{props.riddle.content}</td>
       <td>
         <Accordion>
           <Accordion.Item eventKey="0">

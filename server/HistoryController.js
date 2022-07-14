@@ -2,8 +2,6 @@
 const HDao = require("./PersistantManager");
 const History = require("./History");
 const dayjs = require("dayjs");
-//after validation
-//interact with dao directly
 
 exports.getHistoryByRIdSchema = {
   id: {
@@ -21,8 +19,6 @@ exports.getHistoryByRId = async function (req, res) {
 
     let history = await HDao.loadAllRowsByOneAttribute("History", "rid", Rid);
 
-    // if (history.length === 0)
-    //   return Promise.reject("This riddle doesn't have history in DB");
     return res.status(200).json(history);
   } catch (err) {
     res.status(503).json("generic error");
@@ -57,7 +53,6 @@ const handleCheck = async (History) => {
   } else {
     History["result"] = "F";
   }
-  console.log("Historu>>>", History);
 
   if (History["result"] === "T") {
     await HDao.update("User", { points: Points }, "id", History.repId);

@@ -7,7 +7,7 @@ import { RiddleForm } from "./RiddleForm";
 import { ClosedRiddlesTable } from "./ClosedRiddlesTable";
 import { MyOpenRiddlesTable } from "./MyOpenRiddlesTable";
 
-const MyRiddlesTable = (props) => {
+const MyRiddlesTable = () => {
   const { auth } = useContext(AuthContext);
   const [showCloseRiddle, setShowCloseRiddle] = useState(false);
   const [showOpenRiddle, setShowOpenRiddle] = useState(true);
@@ -15,12 +15,18 @@ const MyRiddlesTable = (props) => {
   const [MyclosedRiddles, setMyClosedRiddles] = useState([]);
   const [MyopenRiddles, setMyOpenRiddles] = useState([]);
   const [update, setUpdate] = useState(true);
+  const [points, setPoints] = useState(0);
 
   const clickHandleClosed = async () => {
     setShowCloseRiddle((r) => !r);
   };
   const clickHandleOpen = async () => {
     setShowOpenRiddle((r) => !r);
+  };
+
+  const syncUserPointById = async (r) => {
+    let result = await API.getUserById(r);
+    setPoints(result.points);
   };
 
   const syncOpenRiddle = async function () {
@@ -51,6 +57,7 @@ const MyRiddlesTable = (props) => {
     if (update) {
       syncOpenRiddle();
       syncCloseRiddle();
+      syncUserPointById(auth.id);
       setUpdate(false);
     }
   }, [update]);
@@ -85,6 +92,7 @@ const MyRiddlesTable = (props) => {
             Add a new riddle{" "}
           </Button>
         </Col>
+        <Col>My current Credit: {points}</Col>
       </Row>
       <Row>
         {showForm && (

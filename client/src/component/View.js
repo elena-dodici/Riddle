@@ -70,8 +70,8 @@ const HomePage = (props) => {
           <LoginRiddlesTable Riddles={Riddles}></LoginRiddlesTable>
         ) : (
           <>
-            <RiddlesTable Riddles={Riddles}></RiddlesTable>
             <Ranking userList={usersOrderList}></Ranking>
+            <RiddlesTable Riddles={Riddles}></RiddlesTable>
           </>
         )}
       </Row>

@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import API from "../API";
 
 const MyOpenRiddlesTable = (props) => {
-  console.log(props.myOpenRiddles);
   return (
     <>
       <h2>My published Open Riddles</h2>
@@ -70,7 +69,7 @@ const OpenRRow = (props) => {
 const OpenRData = (props) => {
   return (
     <>
-      <td>{props.riddle.content}</td>
+      <td className="column-left">{props.riddle.content}</td>
       <td>
         <Accordion>
           <Accordion.Item eventKey="0">

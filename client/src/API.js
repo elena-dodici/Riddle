@@ -131,22 +131,6 @@ const GetUserOrderedList = async () => {
   } else throw result;
 };
 
-// const UpdateUserPoints = async (id, point) => {
-//   const response = await fetch(SERVER_URL + `/api/user/${id}`, {
-//     method: "PUT",
-//     headers: { "Content-Type": "application/json" },
-//     credentials: "include",
-//     body: JSON.stringify({
-//       points: point,
-//     }),
-//   });
-
-//   if (!response.ok) {
-//     const errMsg = await response.json();
-//     throw errMsg;
-//   } else return null;
-// };
-
 const AddNewHistory = async (history) => {
   const response = await fetch(SERVER_URL + `/api/history`, {
     method: "POST",
@@ -154,9 +138,10 @@ const AddNewHistory = async (history) => {
     credentials: "include",
     body: JSON.stringify({ history: history }),
   });
-  console.log(history);
+
   if (!response.ok) {
     const errMsg = await response.json();
+
     throw errMsg;
   } else return null;
 };
@@ -170,22 +155,6 @@ const getUserById = async (id) => {
     return result;
   } else throw result;
 };
-
-// const UpdateCloseTime = async (rid, time) => {
-//   const response = await fetch(SERVER_URL + `/api/riddle/${rid}`, {
-//     method: "PUT",
-//     headers: { "Content-Type": "application/json" },
-//     credentials: "include",
-//     body: JSON.stringify({
-//       closeTime: time,
-//     }),
-//   });
-
-//   if (!response.ok) {
-//     const errMsg = await response.json();
-//     throw errMsg;
-//   } else return null;
-// };
 
 const UpdateStateByRid = async (rid, newState) => {
   const response = await fetch(SERVER_URL + `/api/riddle/state/${rid}`, {

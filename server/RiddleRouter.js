@@ -18,7 +18,6 @@ router.get("/riddle/:uid", isLoggedIn, r.getRiddlesByAutId);
 
 router.post("/riddle", isLoggedIn, r.postRiddle);
 
-router.put("/riddle/:rid", isLoggedIn, r.putCloseTimeByRId);
 router.put("/riddle/state/:rid", isLoggedIn, r.putStateByRId);
 
 module.exports = router;
