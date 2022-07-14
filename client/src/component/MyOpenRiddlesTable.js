@@ -116,9 +116,10 @@ const OpenRData = (props) => {
 };
 
 const HistoryRow = (props) => {
+  let renderTime = dayjs(props.info.answerTime).format("DD/MM/YYYY HH:mm:ss");
   return (
     <>
-      <td>{props.info.answerTime}</td>
+      <td>{renderTime}</td>
       <td>{props.info.answer}</td>
     </>
   );

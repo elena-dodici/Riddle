@@ -1,6 +1,7 @@
 import { Table, Accordion } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
+import dayjs from "dayjs";
 
 import API from "../API";
 
@@ -100,9 +101,10 @@ const CloseRData = (props) => {
   );
 };
 const HistoryRow = (props) => {
+  let renderTime = dayjs(props.info.answerTime).format("DD/MM/YYYY HH:mm:ss");
   return (
     <>
-      <td>{props.info.answerTime}</td>
+      <td>{renderTime}</td>
       <td>{props.info.answer}</td>
     </>
   );
